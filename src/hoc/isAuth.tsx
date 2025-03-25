@@ -4,7 +4,8 @@ import React, { useContext, useEffect } from "react";
 import { redirect } from "next/navigation";
 import { AuthContext } from "@/providers/AuthProvider";
 
-const isAuth = (WrappedComponent: React.ComponentType) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isAuth = (WrappedComponent: any) => {
   return function IsAuth(props: object) {
     const { isAuthenticated, checkIsAuthenticated, isLoaded } =
       useContext(AuthContext);
@@ -17,9 +18,6 @@ const isAuth = (WrappedComponent: React.ComponentType) => {
 
     useEffect(() => {
       if (isLoaded) return;
-      if (!checkIsAuthenticated) {
-        return;
-      }
 
       checkIsAuthenticated();
     }, [checkIsAuthenticated, isLoaded]);

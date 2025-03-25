@@ -8,9 +8,9 @@ import React, { createContext, useCallback, useState } from "react";
 type AuthContextType = {
   user?: User;
   isAuthenticated?: boolean;
-  isLoaded?: boolean;
-  checkIsAuthenticated?: () => void;
-  fetchPrivate?: <T>(url: string, options: RequestInit) => Promise<T>;
+  isLoaded: boolean;
+  checkIsAuthenticated: () => void;
+  fetchPrivate: <T>(url: string, options: RequestInit) => Promise<T>;
 };
 
 type JwtPayload = {
@@ -20,7 +20,9 @@ type JwtPayload = {
 
 type User = JwtPayload;
 
-export const AuthContext = createContext<AuthContextType>({});
+export const AuthContext = createContext<AuthContextType>(
+  {} as AuthContextType
+);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User>();
