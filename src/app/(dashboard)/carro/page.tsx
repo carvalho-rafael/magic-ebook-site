@@ -1,20 +1,18 @@
 "use client";
 
 import { useCallback, useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../providers/AuthProvider";
-import isAuth from "@/hoc/isAuth";
+import { AuthContext } from "../../../providers/AuthProvider";
 import { redirect } from "next/navigation";
 
 type User = {
   email: string;
 };
 
-const Login = () => {
+export default function Carro() {
   const { user, fetchPrivate } = useContext(AuthContext);
   const [users, setUsers] = useState<User[]>();
 
   const getUsers = useCallback(async () => {
-    if (!fetchPrivate) return;
     const response = await fetchPrivate<User[]>(
       "http://localhost:3333/users?type=carro",
       {}
@@ -46,6 +44,4 @@ const Login = () => {
       </button>
     </>
   );
-};
-
-export default isAuth(Login);
+}

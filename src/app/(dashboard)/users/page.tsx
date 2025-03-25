@@ -1,11 +1,10 @@
 "use client";
 
 import { useContext } from "react";
-import { AuthContext } from "../../providers/AuthProvider";
-import isAuth from "@/hoc/isAuth";
+import { AuthContext } from "../../../providers/AuthProvider";
 import { redirect } from "next/navigation";
 
-const Login = () => {
+export default function Users() {
   const { user } = useContext(AuthContext);
 
   return (
@@ -16,10 +15,8 @@ const Login = () => {
           redirect("/carro");
         }}
       >
-        <h3>User</h3>
+        <h3>Carro</h3>
       </button>
     </>
   );
-};
-
-export default isAuth(Login);
+}
