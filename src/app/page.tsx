@@ -44,6 +44,13 @@ export default function Home() {
           >
             Read our docs
           </a>
+          <a
+            href="http://localhost:3333/auth/google/login"
+            rel="noopener noreferrer"
+            className={styles.secondary}
+          >
+            Login google
+          </a>
         </div>
       </main>
       <footer className={styles.footer}>
