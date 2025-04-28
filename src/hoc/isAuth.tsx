@@ -4,34 +4,31 @@ import React, { useContext, useEffect } from "react";
 import { redirect } from "next/navigation";
 import { AuthContext } from "@/providers/AuthProvider";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isAuth = (WrappedComponent: any) => {
-  return function IsAuth(props: object) {
-    const { isAuthenticated, checkIsAuthenticated, isLoaded } =
-      useContext(AuthContext);
-
+const isAuth = <P extends object>(
+  WrappedComponent: React.ComponentType<P>
+): React.FC<P> => {
+  const IsAuth: React.FC<P> = (props) => {
+    const { isAuthenticated, isLoading } = useContext(AuthContext);
     useEffect(() => {
-      if (isAuthenticated === false) {
+      if (isLoading) return;
+
+      if (!isAuthenticated) {
+        console.log("isAuth: Not authenticated");
         return redirect("/login");
       }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, isLoading]);
 
-    useEffect(() => {
-      if (isLoaded) return;
-
-      checkIsAuthenticated();
-    }, [checkIsAuthenticated, isLoaded]);
-
-    if (isAuthenticated === false) {
-      return null;
+    if (isLoading) {
+      return <h1>Loading...</h1>;
     }
 
-    if (!isLoaded) {
+    if (!isAuthenticated) {
       return null;
     }
 
     return <WrappedComponent {...props} />;
   };
+  return IsAuth;
 };
 
 export default isAuth;

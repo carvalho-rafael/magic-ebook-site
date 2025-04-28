@@ -1,12 +1,14 @@
 export async function fetcher(
-  accessToken: string,
   url: string,
-  options: RequestInit
+  options: RequestInit,
+  accessToken?: string
 ) {
-  const defaultHeaders = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${accessToken}`,
-  };
+  const defaultHeaders = accessToken
+    ? {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      }
+    : undefined;
 
   const mergedOptions = {
     ...options,
@@ -16,5 +18,5 @@ export async function fetcher(
     },
   };
 
-  return fetch(url, mergedOptions);
+  return fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, mergedOptions);
 }

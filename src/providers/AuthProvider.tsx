@@ -3,14 +3,15 @@
 import { fetcher } from "@/utils/fetcher";
 import { jwtDecode } from "jwt-decode";
 
-import React, { createContext, useCallback, useState } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 
 type AuthContextType = {
   user?: User;
   isAuthenticated?: boolean;
-  isLoaded: boolean;
-  checkIsAuthenticated: () => void;
+  isLoading?: boolean;
   fetchPrivate: <T>(url: string, options: RequestInit) => Promise<T>;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 type JwtPayload = {
@@ -27,7 +28,7 @@ export const AuthContext = createContext<AuthContextType>(
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User>();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>();
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const getAccessToken = useCallback((): string | undefined => {
     if (typeof window !== "undefined") {
@@ -45,11 +46,58 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const refresh = useCallback(async (): Promise<boolean> => {
-    const response = await fetch("http://localhost:3333/auth/refresh", {
-      method: "GET",
+    try {
+      const response = await fetcher("auth/refresh", {
+        credentials: "include",
+      });
+      return response.ok;
+    } catch (error) {
+      console.log("Error refreshing token: ", error);
+      return false;
+    }
+  }, []);
+
+  const login = useCallback(
+    async (username: string, password: string) => {
+      console.log("login");
+      const response = await fetcher("auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: username,
+          password: password,
+        }),
+      });
+
+      if (response.status === 200) {
+        const accessToken = getAccessToken();
+        if (accessToken) {
+          try {
+            const { name, email } = jwtDecode<JwtPayload>(accessToken);
+            setUser({ name, email });
+            setIsAuthenticated(true);
+          } catch {
+            setIsAuthenticated(false);
+          }
+        }
+      }
+    },
+    [getAccessToken]
+  );
+
+  const logout = useCallback(async () => {
+    const response = await fetcher("auth/logout", {
+      method: "POST",
       credentials: "include",
     });
-    return response.ok;
+
+    if (response.status === 200) {
+      setIsAuthenticated(false);
+    }
   }, []);
 
   const fetchPrivate = useCallback(
@@ -57,23 +105,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       let accessToken = getAccessToken();
 
       if (!accessToken) {
+        const refreshSuccess = await refresh();
+        if (refreshSuccess) {
+          accessToken = getAccessToken();
+          if (accessToken) {
+            try {
+              const { name, email } = jwtDecode<JwtPayload>(accessToken);
+              setUser({ name, email });
+              setIsAuthenticated(true);
+
+              const retryResponse = await fetcher(url, options, accessToken);
+
+              return await retryResponse.json();
+            } catch {
+              setIsAuthenticated(false);
+              return null;
+            }
+          }
+        }
         setIsAuthenticated(false);
         return null;
       }
 
       try {
-        const response = await fetcher(accessToken, url, options);
+        const response = await fetcher(url, options, accessToken);
 
         if (response.status === 401) {
           const refreshSuccess = await refresh();
           if (refreshSuccess) {
             accessToken = getAccessToken();
-            if (!accessToken) {
+            if (accessToken) {
+              const retryResponse = await fetcher(url, options, accessToken);
+              return await retryResponse.json();
+            } else {
               setIsAuthenticated(false);
               return null;
             }
-            const retryResponse = await fetcher(accessToken, url, options);
-            return await retryResponse.json();
           } else {
             setIsAuthenticated(false);
             return null;
@@ -93,32 +160,59 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   const checkIsAuthenticated = useCallback(async () => {
-    setIsLoaded(false);
+    setIsLoading(true);
+    let accessToken = getAccessToken();
+
+    if (accessToken) {
+      try {
+        const { name, email } = jwtDecode<JwtPayload>(accessToken);
+        setUser({ name, email });
+        setIsAuthenticated(true);
+        setIsLoading(false);
+        return;
+      } catch {
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        console.log("Token expired");
+        return;
+      }
+    }
+
     const isRefreshed = await refresh();
 
     if (isRefreshed) {
-      const accessToken = getAccessToken();
-      setIsAuthenticated(!!accessToken);
+      accessToken = getAccessToken();
       if (accessToken) {
-        const { name, email } = jwtDecode<JwtPayload>(accessToken);
-        setUser({ name, email });
+        try {
+          const { name, email } = jwtDecode<JwtPayload>(accessToken);
+          setUser({ name, email });
+          setIsAuthenticated(true);
+          setIsLoading(false);
+          return;
+        } catch {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
       }
-      setIsLoaded(true);
-    } else {
-      setIsAuthenticated(false);
     }
-
-    return isRefreshed;
+    setIsAuthenticated(false);
+    setIsLoading(false);
   }, [getAccessToken, refresh]);
+
+  useEffect(() => {
+    checkIsAuthenticated();
+  }, [checkIsAuthenticated]);
 
   return (
     <AuthContext.Provider
       value={{
         user,
         fetchPrivate,
+        login,
+        logout,
         isAuthenticated,
-        checkIsAuthenticated,
-        isLoaded,
+        isLoading,
       }}
     >
       {children}
