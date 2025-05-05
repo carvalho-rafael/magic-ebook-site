@@ -9,6 +9,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -33,6 +34,8 @@ a {
 
 :root {
   --radius: 0.625rem;
+  --theme-1: #1ebbe1;
+  --theme-2: #e1441e;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -105,6 +108,8 @@ a {
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-theme-1: var(--theme-1);
+  --color-theme-2: var(--theme-2);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

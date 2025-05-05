@@ -59,7 +59,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = useCallback(
     async (username: string, password: string) => {
-      console.log("login");
       const response = await fetcher("auth/login", {
         method: "POST",
         credentials: "include",
