@@ -3,7 +3,14 @@
 import { fetcher } from "@/utils/fetcher";
 import { jwtDecode } from "jwt-decode";
 
-import React, { createContext, useCallback, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { LoadingContext } from "./LoadingProvider";
 
 type AuthContextType = {
   user?: User;
@@ -11,6 +18,7 @@ type AuthContextType = {
   isLoading?: boolean;
   fetchPrivate: <T>(url: string, options: RequestInit) => Promise<T>;
   login: (username: string, password: string) => Promise<void>;
+  signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -29,6 +37,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User>();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const { setIsLoading: setIsLoadingSpinner } = useContext(LoadingContext);
 
   const getAccessToken = useCallback((): string | undefined => {
     if (typeof window !== "undefined") {
@@ -58,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = useCallback(
-    async (username: string, password: string) => {
+    async (email: string, password: string) => {
       const response = await fetcher("auth/login", {
         method: "POST",
         credentials: "include",
@@ -67,8 +77,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: username,
-          password: password,
+          email,
+          password,
+        }),
+      });
+
+      if (response.status === 200) {
+        const accessToken = getAccessToken();
+        if (accessToken) {
+          try {
+            const { name, email } = jwtDecode<JwtPayload>(accessToken);
+            setUser({ name, email });
+            setIsAuthenticated(true);
+          } catch {
+            setIsAuthenticated(false);
+          }
+        }
+      }
+    },
+    [getAccessToken]
+  );
+
+  const signup = useCallback(
+    async (name: string, email: string, password: string) => {
+      const response = await fetcher("auth/signup", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
         }),
       });
 
@@ -160,6 +202,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const checkIsAuthenticated = useCallback(async () => {
     setIsLoading(true);
+    setIsLoadingSpinner(true);
     let accessToken = getAccessToken();
 
     if (accessToken) {
@@ -168,10 +211,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser({ name, email });
         setIsAuthenticated(true);
         setIsLoading(false);
+        setIsLoadingSpinner(false);
         return;
       } catch {
         setIsAuthenticated(false);
         setIsLoading(false);
+        setIsLoadingSpinner(false);
         console.log("Token expired");
         return;
       }
@@ -187,17 +232,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser({ name, email });
           setIsAuthenticated(true);
           setIsLoading(false);
+          setIsLoadingSpinner(false);
           return;
         } catch {
           setIsAuthenticated(false);
           setIsLoading(false);
+          setIsLoadingSpinner(false);
           return;
         }
       }
     }
     setIsAuthenticated(false);
     setIsLoading(false);
-  }, [getAccessToken, refresh]);
+    setIsLoadingSpinner(false);
+  }, [getAccessToken, refresh, setIsLoadingSpinner]);
 
   useEffect(() => {
     checkIsAuthenticated();
@@ -209,6 +257,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         user,
         fetchPrivate,
         login,
+        signup,
         logout,
         isAuthenticated,
         isLoading,

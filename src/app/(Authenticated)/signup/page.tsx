@@ -21,13 +21,25 @@ import { AuthContext } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { LoadingContext } from "@/providers/LoadingProvider";
 
-const formSchema = z.object({
-  email: z.string().min(2).max(50),
-  password: z.string().min(4),
-});
+const formSchema = z
+  .object({
+    name: z.string().min(2).max(50),
+    email: z.string().min(2).max(50),
+    password: z.string().min(4),
+    confirmPassword: z.string().min(4),
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: "custom",
+        message: "As senhas não conferem",
+        path: ["confirmPassword"],
+      });
+    }
+  });
 
 const Login = () => {
-  const { isAuthenticated, login } = useContext(AuthContext);
+  const { isAuthenticated, signup } = useContext(AuthContext);
   const { setIsLoading } = useContext(LoadingContext);
 
   useEffect(() => {
@@ -39,14 +51,16 @@ const Login = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    await login(values.email, values.password);
+    await signup(values.name, values.email, values.password);
     setIsLoading(false);
   }
 
@@ -65,8 +79,21 @@ const Login = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-4 w-[280px] max-w-full px-4"
+            className="flex flex-col gap-4 w-[380px] max-w-full px-4"
           >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nome</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="email"
@@ -87,14 +114,27 @@ const Login = () => {
                 <FormItem>
                   <FormLabel>Senha</FormLabel>
                   <FormControl>
-                    <Input placeholder="" {...field} type="password" />
+                    <Input {...field} type="password" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirme a Senha</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <Button type="submit" size="lg">
-              Entrar
+              Cadastrar
             </Button>
           </form>
         </Form>
@@ -110,15 +150,15 @@ const Login = () => {
         <hr className="my-4 w-[280px]" />
         <div>
           <p>
-            Ainda não tem cadastro?
-            <a href="/signup" rel="noopener noreferrer">
+            Já tem cadastro?
+            <a href="/login" rel="noopener noreferrer">
               <Button
                 type="button"
                 size="lg"
                 variant="link"
                 className="!px-2 font-bold text-[18px]"
               >
-                Cadastre-se
+                Faça login
               </Button>
             </a>
           </p>

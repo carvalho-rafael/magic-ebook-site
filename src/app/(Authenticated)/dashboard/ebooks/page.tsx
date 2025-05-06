@@ -7,18 +7,22 @@ import { AuthContext } from "@/providers/AuthProvider";
 import isAuth from "@/hoc/isAuth";
 import { redirect } from "next/navigation";
 import { Ebook } from "@/@types/ebook";
+import Loading from "@/components/Loading";
 
 const Ebooks = () => {
   const { fetchPrivate } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState<boolean>();
 
   const [ebooks, setEbooks] = useState<Ebook[]>([]);
 
   const fetchEbook = useCallback(async () => {
+    setIsLoading(true);
     const response: Ebook[] = await fetchPrivate(`ebooks`, {});
     if (response) {
       setEbooks(response);
     }
-  }, [fetchPrivate]);
+    setIsLoading(false);
+  }, [fetchPrivate, setIsLoading]);
 
   const deleteEbook = useCallback(
     async (id: number) => {
@@ -50,6 +54,10 @@ const Ebooks = () => {
   useEffect(() => {
     fetchEbook();
   }, [fetchEbook]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div>

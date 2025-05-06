@@ -1,3 +1,4 @@
+import Loading from "@/components/Loading";
 import { Providers } from "../../providers/Providers";
 
 export default function RootLayout({
@@ -5,5 +6,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <Providers>{children}</Providers>;
+  return (
+    <Providers>
+      <div
+        id="loading-container"
+        className="justify-center items-center absolute w-screen h-screen bg-accent opacity-75 hidden"
+      >
+        <Loading />
+      </div>
+      {children}
+    </Providers>
+  );
 }

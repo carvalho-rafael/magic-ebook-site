@@ -32,6 +32,10 @@ a {
   }
 }
 
+button {
+  cursor: pointer;
+}
+
 :root {
   --radius: 0.625rem;
   --theme-1: #1ebbe1;
