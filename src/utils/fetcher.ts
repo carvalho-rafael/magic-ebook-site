@@ -5,7 +5,6 @@ export async function fetcher(
 ) {
   const defaultHeaders = accessToken
     ? {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       }
     : undefined;
