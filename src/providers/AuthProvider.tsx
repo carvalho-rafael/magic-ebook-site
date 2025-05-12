@@ -159,7 +159,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
               return await retryResponse.json();
             } catch {
-              setIsAuthenticated(false);
               return null;
             }
           }
