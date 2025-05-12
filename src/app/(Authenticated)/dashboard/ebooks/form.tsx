@@ -8,23 +8,28 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { CurrencyInput } from "react-currency-mask";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
 import Tiptap from "@/components/TipTap/TipTap";
+import { LoadingContext } from "@/providers/LoadingProvider";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { FaUpload } from "react-icons/fa";
 
 const formSchema = z.object({
   title: z.string().min(2),
-  label: z.string(),
+  label: z.string().min(2),
   description: z.string(),
-  body: z.string(),
-  value: z.string(),
+  body: z.string().min(2),
+  value: z.number().min(5),
+  file: z.any(),
 });
 
 type IRequest = {
@@ -32,11 +37,17 @@ type IRequest = {
   defaultValues?: {
     id: number;
     title: string;
+    value: string;
+    filename?: string;
   };
 };
 
 const EbookForm = ({ isEdit, defaultValues }: IRequest) => {
   const { fetchPrivate } = useContext(AuthContext);
+
+  const { setIsLoading } = useContext(LoadingContext);
+
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,29 +56,51 @@ const EbookForm = ({ isEdit, defaultValues }: IRequest) => {
       label: "",
       description: "",
       body: "",
-      value: "",
+      value: 0,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
     const method = isEdit ? "PATCH" : "POST";
     const url = isEdit ? `ebooks/${defaultValues?.id}` : "ebooks";
-    const body = JSON.stringify(values);
+    const label = values.label.replace(/[^a-z0-9-]+/g, "");
 
-    await fetchPrivate(url, {
+    const formdata = new FormData();
+    formdata.append("file", values.file);
+    formdata.append("title", values.title);
+    formdata.append("label", label);
+    formdata.append("description", values.description);
+    formdata.append("body", values.body);
+    formdata.append("value", String(values.value));
+
+    const response = await fetchPrivate(url, {
       method,
-      body,
+      body: formdata,
     });
+
+    if (response) {
+      setIsLoading(false);
+      router.push("/dashboard");
+    } else {
+      setIsLoading(false);
+      toast("Erro ao salvar E-book", {
+        style: { background: "red", color: "white" },
+      });
+    }
   }
 
   useEffect(() => {
     if (isEdit && defaultValues) {
-      form.reset(defaultValues);
+      form.reset({
+        ...defaultValues,
+        value: Number(defaultValues.value),
+      });
     }
   }, [isEdit, defaultValues, form]);
 
   return (
-    <div>
+    <div className="p-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -80,11 +113,8 @@ const EbookForm = ({ isEdit, defaultValues }: IRequest) => {
               <FormItem>
                 <FormLabel>Título</FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Input {...field} />
                 </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -92,22 +122,114 @@ const EbookForm = ({ isEdit, defaultValues }: IRequest) => {
 
           <FormField
             control={form.control}
-            name="value"
+            name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Valor</FormLabel>
+                <FormLabel>Descrição (opcional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Input {...field} />
                 </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <FormField
+              control={form.control}
+              name="label"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Label (nome que aparecerá na url)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="text"
+                      onKeyDown={(e) => {
+                        if (!e.key.match(/^[a-zA-Z0-9-]/g)) {
+                          e.preventDefault();
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="value"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Valor (min R$ 5,00)</FormLabel>
+                  <FormControl>
+                    <CurrencyInput
+                      value={field.value}
+                      onChangeValue={(_, value) => {
+                        field.onChange(value);
+                      }}
+                      InputElement={<Input />}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="border-2 p-2">
+            {defaultValues?.filename && (
+              <div>
+                <span className="text-sm">
+                  Arquivo atual: {defaultValues.filename}
+                </span>
+                <p className="text-sm">
+                  Para substituir o arquivo atual, selecione um novo arquivo
+                </p>
+              </div>
+            )}
+
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor="file-pdf"
+                    className="flex flex-col items-start"
+                  >
+                    Adicionar arquivo PDF
+                    <div className="flex gap-4">
+                      <FaUpload size="20" className="ml-2 text-gray-500" />
+                      <span className="text-sm text-gray-500">
+                        {value?.name || "Nenhum arquivo selecionado"}
+                      </span>
+                    </div>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...fieldProps}
+                      className="hidden"
+                      id="file-pdf"
+                      type="file"
+                      title="Selecionar arquivo"
+                      accept="application/pdf"
+                      onChange={(event) =>
+                        onChange(event.target.files && event.target.files[0])
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
           <div>
+            <FormLabel>
+              Texto que aparecerá na página de venda do E-book.
+            </FormLabel>
             <Tiptap
               initialContent={form.getValues("body")}
               onChange={(bodyHtml) => {
@@ -117,7 +239,7 @@ const EbookForm = ({ isEdit, defaultValues }: IRequest) => {
           </div>
 
           <Button type="submit" className="self-start">
-            Submit
+            Salvar
           </Button>
         </form>
       </Form>

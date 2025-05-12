@@ -20,6 +20,7 @@ import { useContext, useEffect } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { LoadingContext } from "@/providers/LoadingProvider";
+import Loading from "@/components/Loading";
 
 const formSchema = z.object({
   email: z.string().min(2).max(50),
@@ -27,7 +28,7 @@ const formSchema = z.object({
 });
 
 const Login = () => {
-  const { isAuthenticated, login } = useContext(AuthContext);
+  const { isAuthenticated, login, isLoading } = useContext(AuthContext);
   const { setIsLoading } = useContext(LoadingContext);
 
   useEffect(() => {
@@ -48,6 +49,14 @@ const Login = () => {
     setIsLoading(true);
     await login(values.email, values.password);
     setIsLoading(false);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center w-screen h-screen">
+        <Loading />
+      </div>
+    );
   }
 
   return (

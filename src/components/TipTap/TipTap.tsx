@@ -243,7 +243,7 @@ export default function Tiptap({
   }, [initialContent, editor]);
 
   return (
-    <div className="p-4 px-2">
+    <div className="p-4 px-2 border-2 rounded-[10px]">
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
     </div>

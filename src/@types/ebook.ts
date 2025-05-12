@@ -9,6 +9,7 @@ export type Ebook = {
   payment_methods?: string;
   visits?: number;
   purchases?: number;
+  filename?: string;
   preview_1?: string;
   preview_2?: string;
   preview_3?: string;
