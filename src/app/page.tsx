@@ -18,8 +18,8 @@ export default function Home() {
       <SectionFees />
       <SectionWithraw />
       <SectionCompare />
-      <Footer />
       <div className="bg-theme-2 w-full h-2"></div>
+      <Footer />
     </div>
   );
 }
