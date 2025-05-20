@@ -1,16 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useParams } from "next/navigation";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Ebook } from "@/@types/ebook";
 import { fetcher } from "@/utils/fetcher";
 
 import { initMercadoPago, Payment } from "@mercadopago/sdk-react";
 import { IPaymentFormData } from "@mercadopago/sdk-react/esm/bricks/payment/type";
-import { Input } from "@/components/ui/input";
+import Navbar from "@/components/checkout/Navbar";
+import Footer from "@/components/checkout/Footer";
+import { FaFileArchive } from "react-icons/fa";
+import { toast } from "sonner";
 
 const Checkout = () => {
   const [ebook, setEbook] = useState<Ebook>();
@@ -18,9 +22,8 @@ const Checkout = () => {
   const { label } = useParams<{ label: string }>();
 
   const [qrCodePix, setQrCodePix] = useState<string>();
-
-  const firstName = useRef<HTMLInputElement>(null);
-  const lastName = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState("");
+  const pixInterval = useRef<NodeJS.Timeout>(undefined);
 
   const fetchEbook = useCallback(async (label: string) => {
     try {
@@ -53,45 +56,125 @@ const Checkout = () => {
     }
   }, [label, fetchEbook]);
 
+  useEffect(() => {
+    return () => {
+      clearInterval(pixInterval.current);
+    };
+  }, []);
+
   const onSubmit = useCallback(
     async ({ selectedPaymentMethod, formData }: IPaymentFormData) => {
-      console.log(
-        selectedPaymentMethod,
-        formData,
-        firstName.current?.value,
-        lastName.current?.value
-      );
+      console.log(selectedPaymentMethod, formData);
 
       let url = "payments/process-payment-pix";
 
       if (selectedPaymentMethod !== "bank_transfer") {
         url = "payments/process-payment-card";
       }
-
-      const response = await fetcher(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          ebook_id: ebook?.id,
-          ...formData,
-          payer: {
-            ...formData.payer,
-            first_name: firstName.current?.value,
-            last_name: lastName.current?.value,
+      try {
+        const response = await fetcher(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        }),
-      });
+          body: JSON.stringify({
+            ebook_id: ebook?.id,
+            ...formData,
+          }),
+        });
 
-      const pixResponse = await response.json();
-      if (pixResponse) {
-        setQrCodePix(pixResponse?.qrCode);
-        console.log(pixResponse);
+        if (response.status === 409) {
+          const errorResponse = await response.json();
+          toast(errorResponse.message);
+          return;
+        }
+
+        if (response.status === 500) {
+          const errorResponse = await response.json();
+          toast(errorResponse.message);
+          return;
+        }
+
+        if (response.status === 401) {
+          const errorResponse = await response.json();
+          toast(errorResponse, { description: "401" });
+          return;
+        }
+
+        if (selectedPaymentMethod === "bank_transfer") {
+          const pixResponse = await response.json();
+
+          if (pixResponse && pixResponse.qrCode && pixResponse.paymentCode) {
+            setQrCodePix(pixResponse.qrCode);
+
+            const intervalId = setInterval(async () => {
+              console.log("checking pix paid");
+
+              fetcher("payments/check-payment-pix-approved", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  payment_code: pixResponse.paymentCode,
+                }),
+              })
+                .then(async (responseCheck) => {
+                  if (responseCheck.status === 200) {
+                    const blob = await responseCheck.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    setFile(url);
+
+                    clearInterval(intervalId);
+                  }
+                })
+                .catch(() => {
+                  toast("erro ao capturar pagamento");
+                  clearInterval(intervalId);
+                });
+            }, 5000);
+            pixInterval.current = intervalId;
+          }
+        } else {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          setFile(url);
+        }
+      } catch (error: any) {
+        toast(error.response.data.message);
       }
     },
-    [ebook?.id, firstName, lastName]
+    [ebook?.id]
+  );
+
+  const paymentComponent = useMemo(
+    () => (
+      <div>
+        <Payment
+          initialization={{
+            amount: Number(ebook?.value),
+          }}
+          customization={{
+            paymentMethods: {
+              creditCard: "all",
+              bankTransfer: "all",
+            },
+            visual: {
+              defaultPaymentOption: { bankTransferForm: true },
+              hideFormTitle: true,
+            },
+          }}
+          onSubmit={onSubmit}
+          onReady={() => {
+            console.log("Payment brick is ready");
+          }}
+          onError={(error) => {
+            console.error("Payment brick error: ", error);
+          }}
+        />
+      </div>
+    ),
+    [ebook, onSubmit]
   );
 
   if (!ebook) {
@@ -99,39 +182,51 @@ const Checkout = () => {
   }
 
   return (
-    <div className="prose">
-      <h1>{ebook?.title}</h1>
-      <p>{ebook?.value}</p>
-      <div className="[&_*]:h-[50px]  [&_*]:border-2"></div>
+    <div className="prose max-w-full">
+      <Navbar />
+      <div className="p-4 bg-[url(/assets/bg-pattern.jpg)]">
+        <div className="max-w-[600px] m-auto bg-white py-6 shadow">
+          <div className="px-4">
+            <h2 className="font-normal mt-0">{ebook?.title}</h2>
+            <p className="font-normal italic">{ebook?.description}</p>
+            <div dangerouslySetInnerHTML={{ __html: ebook.body }}></div>
+            <hr />
+            <p className="text-lg">Pague com PIX ou cartão</p>
+            <p className="mb-0 mt-4 text-2xl text-green-500 border-l-4 pl-2">
+              {Intl.NumberFormat("pt-br", {
+                style: "currency",
+                currency: "BRL",
+              }).format(ebook?.value ? Number(ebook.value) : 0)}
+            </p>
 
-      {qrCodePix && (
-        <div className="w-[300px] h-[300px] bg-gray-200">
-          <img src={`data:image/png;base64,${qrCodePix}`} alt="qrCodePix" />
+            {file && (
+              <a href={file} download={`${ebook.filename}`}>
+                <FaFileArchive size="30" />
+              </a>
+            )}
+          </div>
+
+          {ebook && paymentComponent}
+
+          <div className="px-4">
+            {qrCodePix && (
+              <div className="w-[180px] h-[180px] bg-gray-200">
+                <img
+                  src={`data:image/png;base64,${qrCodePix}`}
+                  alt="qrCodePix"
+                />
+              </div>
+            )}
+
+            {file && (
+              <a href={file} download={`${ebook.filename}`}>
+                <FaFileArchive size="30" />
+              </a>
+            )}
+          </div>
         </div>
-      )}
-
-      <Input ref={firstName} id="firstName" name="first_name" type="text" />
-      <Input ref={lastName} id="lastName" name="last_name" type="text" />
-
-      <Payment
-        initialization={{
-          amount: Number(ebook.value),
-        }}
-        customization={{
-          paymentMethods: {
-            creditCard: "all",
-            debitCard: "all",
-            bankTransfer: "all",
-          },
-        }}
-        onSubmit={onSubmit}
-        onReady={() => {
-          console.log("Payment brick is ready");
-        }}
-        onError={(error) => {
-          console.error("Payment brick error: ", error);
-        }}
-      />
+      </div>
+      <Footer />
     </div>
   );
 };
