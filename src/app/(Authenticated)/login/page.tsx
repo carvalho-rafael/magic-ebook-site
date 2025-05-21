@@ -109,7 +109,7 @@ const Login = () => {
         </Form>
         <div className="h-2 w-2 rounded-[20px] bg-gray-300 my-4"></div>
         <a
-          href={`${process.env.NEXT_PUBLIC_API_URL}auth/google/login`}
+          href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google/login`}
           rel="noopener noreferrer"
         >
           <Button type="button" size="lg">

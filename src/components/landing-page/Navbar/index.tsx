@@ -23,7 +23,7 @@ export default function Navbar() {
             <a href="#section-fees">Preços</a>
           </li>
           <li className={MENU_ITEM_STYLE}>
-            <a href="/login">Conheça</a>
+            <a href="/login">Login</a>
           </li>
         </ul>
       </div>

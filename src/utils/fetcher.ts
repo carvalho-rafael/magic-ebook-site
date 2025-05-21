@@ -17,5 +17,5 @@ export async function fetcher(
     },
   };
 
-  return fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, mergedOptions);
+  return fetch(`${process.env.NEXT_PUBLIC_API_URL}/${url}`, mergedOptions);
 }

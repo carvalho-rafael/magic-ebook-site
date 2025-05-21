@@ -79,7 +79,7 @@ const EbookList = () => {
                 onClick={() => {
                   navigator.clipboard
                     .writeText(
-                      `${process.env.NEXT_PUBLIC_WEB_URL}checkout/${ebook.label}`
+                      `${process.env.NEXT_PUBLIC_WEB_URL}/checkout/${ebook.label}`
                     )
                     .then(() => {
                       toast("Link copiado.", {
