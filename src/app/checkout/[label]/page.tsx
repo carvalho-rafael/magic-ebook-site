@@ -22,6 +22,7 @@ const Checkout = () => {
   const { label } = useParams<{ label: string }>();
 
   const [qrCodePix, setQrCodePix] = useState<string>();
+  const [copyPastPix, setCopyPastPix] = useState<string>();
   const [file, setFile] = useState("");
   const pixInterval = useRef<NodeJS.Timeout>(undefined);
 
@@ -106,6 +107,7 @@ const Checkout = () => {
 
           if (pixResponse && pixResponse.qrCode && pixResponse.paymentCode) {
             setQrCodePix(pixResponse.qrCode);
+            setCopyPastPix(pixResponse.copyPast);
 
             const intervalId = setInterval(async () => {
               console.log("checking pix paid");
@@ -200,7 +202,12 @@ const Checkout = () => {
             </p>
 
             {file && (
-              <a href={file} download={`${ebook.filename}`}>
+              <a
+                className="flex justify-center items-center gap-3 border-2 p-2 max-w-[200px] mt-4"
+                href={file}
+                download={`${ebook.filename}`}
+              >
+                <p>Baixar Arquivo</p>
                 <FaFileArchive size="30" />
               </a>
             )}
@@ -209,17 +216,44 @@ const Checkout = () => {
           {ebook && paymentComponent}
 
           <div className="px-4">
-            {qrCodePix && (
-              <div className="w-[180px] h-[180px] bg-gray-200">
-                <img
-                  src={`data:image/png;base64,${qrCodePix}`}
-                  alt="qrCodePix"
-                />
+            {qrCodePix && copyPastPix && (
+              <div className="w-full">
+                <p className="mt-0">Copie o código ou escaneie o Qrcode</p>
+                <div className="flex gap-2">
+                  <input
+                    value={copyPastPix}
+                    name="copyPastPix"
+                    id="copyPastPix"
+                    className="flex-1 border-2 p-2"
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(copyPastPix);
+                      toast("copiado", {
+                        style: { background: "green", color: "white" },
+                      });
+                    }}
+                  >
+                    Copiar
+                  </button>
+                </div>
+                <div className="w-[300px] h-[300px] bg-gray-200 mx-auto">
+                  <img
+                    className="!my-1"
+                    src={`data:image/png;base64,${qrCodePix}`}
+                    alt="qrCodePix"
+                  />
+                </div>
               </div>
             )}
 
             {file && (
-              <a href={file} download={`${ebook.filename}`}>
+              <a
+                className="flex justify-center items-center gap-3 border-2 p-2 max-w-[200px]"
+                href={file}
+                download={`${ebook.filename}`}
+              >
+                <p>Baixar Arquivo</p>
                 <FaFileArchive size="30" />
               </a>
             )}
