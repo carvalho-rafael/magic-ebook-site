@@ -16,21 +16,23 @@ const Dashboard = () => {
   const { fetchPrivate } = useContext(AuthContext);
 
   const authorizeMP = useCallback(async () => {
-    const response: { url: string } = await fetchPrivate(
+    const response = await fetchPrivate<{ url: string }>(
       `payments/authorization`,
       {}
     );
-    if (response) {
-      window.open(response.url);
+    if (response.success) {
+      window.open(response.data.url);
     }
   }, [fetchPrivate]);
 
   const isConnectedMP = useCallback(async () => {
-    const response: { isConnected: boolean } = await fetchPrivate(
+    const response = await fetchPrivate<{ isConnected: boolean }>(
       `payments/is-connected`,
       {}
     );
-    setConnected(response.isConnected);
+    if (response.success) {
+      setConnected(response.data.isConnected);
+    }
   }, [fetchPrivate]);
 
   useEffect(() => {

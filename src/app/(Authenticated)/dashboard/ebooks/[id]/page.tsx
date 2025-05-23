@@ -13,12 +13,11 @@ const EbookEdit = () => {
 
   const fetchEbook = useCallback(
     async (id: string) => {
-      const response: Ebook = await fetchPrivate(`ebooks/${id}`, {
+      const response = await fetchPrivate<Ebook>(`ebooks/${id}`, {
         method: "GET",
       });
-      if (response) {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        setEbook(response);
+      if (response.success) {
+        setEbook(response.data);
       }
     },
     [fetchPrivate]

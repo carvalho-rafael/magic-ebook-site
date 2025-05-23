@@ -26,19 +26,19 @@ const EbookList = () => {
 
   const fetchEbook = useCallback(async () => {
     setIsLoading(true);
-    const response: Ebook[] = await fetchPrivate(`ebooks`, {});
-    if (response) {
-      setEbooks(response);
+    const response = await fetchPrivate<Ebook[]>(`ebooks`, {});
+    if (response.success) {
+      setEbooks(response.data);
     }
     setIsLoading(false);
   }, [fetchPrivate, setIsLoading]);
 
   const deleteEbook = useCallback(
     async (id: number) => {
-      const response: Ebook[] = await fetchPrivate(`ebooks/${id}`, {
+      const response = await fetchPrivate(`ebooks/${id}`, {
         method: "DELETE",
       });
-      if (response) {
+      if (response.success) {
         alert("Ebook excluído com sucesso");
         fetchEbook();
       }

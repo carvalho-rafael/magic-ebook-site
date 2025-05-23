@@ -12,11 +12,27 @@ import React, {
 } from "react";
 import { LoadingContext } from "./LoadingProvider";
 
+type SuccessResponse<T> = {
+  success: true;
+  data: T;
+};
+
+type ErrorResponse = {
+  success: false;
+  status: number;
+  erro: string;
+};
+
+type FetchPrivateResponse<T> = SuccessResponse<T> | ErrorResponse;
+
 type AuthContextType = {
   user?: User;
   isAuthenticated?: boolean;
   isLoading?: boolean;
-  fetchPrivate: <T>(url: string, options: RequestInit) => Promise<T>;
+  fetchPrivate: <T>(
+    url: string,
+    options: RequestInit
+  ) => Promise<FetchPrivateResponse<T>>;
   login: (username: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -142,7 +158,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const fetchPrivate = useCallback(
-    async (url: string, options: RequestInit) => {
+    async <T,>(
+      url: string,
+      options: RequestInit
+    ): Promise<FetchPrivateResponse<T>> => {
       let accessToken = getAccessToken();
 
       if (!accessToken) {
@@ -157,14 +176,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
               const retryResponse = await fetcher(url, options, accessToken);
 
-              return await retryResponse.json();
+              if (!retryResponse.ok) {
+                if (retryResponse.status === 400) {
+                  const errorResponse = await retryResponse.json();
+
+                  return {
+                    success: false,
+                    status: retryResponse.status,
+                    erro: errorResponse.message,
+                  };
+                }
+              }
+
+              const retryResponseData = await retryResponse.json();
+              return {
+                success: true,
+                data: retryResponseData,
+              };
             } catch {
-              return null;
+              return {
+                success: false,
+                status: 500,
+                erro: "unknown",
+              };
             }
           }
         }
         setIsAuthenticated(false);
-        return null;
+        return {
+          success: false,
+          status: 500,
+          erro: "unknown",
+        };
       }
 
       try {
@@ -176,25 +219,67 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             accessToken = getAccessToken();
             if (accessToken) {
               const retryResponse = await fetcher(url, options, accessToken);
-              return await retryResponse.json();
+
+              if (!retryResponse.ok) {
+                if (retryResponse.status === 400) {
+                  const errorResponse = await retryResponse.json();
+
+                  return {
+                    success: false,
+                    status: retryResponse.status,
+                    erro: errorResponse.message,
+                  };
+                }
+              }
+
+              const retryResponseData = await retryResponse.json();
+              return {
+                success: true,
+                data: retryResponseData,
+              };
             } else {
               setIsAuthenticated(false);
-              return null;
+              return {
+                success: false,
+                status: 500,
+                erro: "unknown",
+              };
             }
           } else {
             setIsAuthenticated(false);
-            return null;
+            return {
+              success: false,
+              status: 500,
+              erro: "unknown",
+            };
           }
         }
+
         if (!response.ok) {
-          throw new Error("Request failed");
+          if (response.status === 400) {
+            const errorResponse = await response.json();
+
+            return {
+              success: false,
+              status: response.status,
+              erro: errorResponse.message,
+            };
+          }
         }
 
-        return await response.json();
+        const responseData = await response.json();
+        return {
+          success: true,
+          data: responseData,
+        };
       } catch (error: unknown) {
         console.log(error);
       }
-      return null;
+      return {
+        success: false,
+        status: 500,
+        erro: "unknown",
+      };
     },
     [getAccessToken, refresh]
   );

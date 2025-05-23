@@ -79,11 +79,18 @@ const EbookForm = ({ isEdit, defaultValues }: IRequest) => {
       body: formdata,
     });
 
-    if (response) {
+    if (response.success) {
       setIsLoading(false);
       router.push("/dashboard");
+      return;
     } else {
       setIsLoading(false);
+      if (response.status === 400) {
+        toast(response.erro, {
+          style: { background: "yellow" },
+        });
+        return;
+      }
       toast("Erro ao salvar E-book", {
         style: { background: "red", color: "white" },
       });
