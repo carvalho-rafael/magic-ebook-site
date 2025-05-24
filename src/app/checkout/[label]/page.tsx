@@ -85,20 +85,24 @@ const Checkout = () => {
         });
 
         if (response.status === 409) {
-          const errorResponse = await response.json();
-          toast(errorResponse.message);
+          toast("Pagamento falhou", {
+            description: "Por favor, confira os dados do cartão",
+            style: { background: "red", color: "white" },
+          });
           return;
         }
 
         if (response.status === 500) {
-          const errorResponse = await response.json();
-          toast(errorResponse.message);
+          toast("Pagamento falhou", {
+            description: "Por favor, confira os dados do cartão",
+            style: { background: "red", color: "white" },
+          });
           return;
         }
 
         if (response.status === 401) {
           const errorResponse = await response.json();
-          toast(errorResponse, { description: "401" });
+          toast(errorResponse);
           return;
         }
 
@@ -125,6 +129,10 @@ const Checkout = () => {
                   if (responseCheck.status === 200) {
                     const blob = await responseCheck.blob();
                     const url = window.URL.createObjectURL(blob);
+                    toast("Arquivo disponível para download", {
+                      style: { background: "green", color: "white" },
+                    });
+
                     setFile(url);
 
                     clearInterval(intervalId);
@@ -140,6 +148,10 @@ const Checkout = () => {
         } else {
           const blob = await response.blob();
           const url = window.URL.createObjectURL(blob);
+          toast("Arquivo disponível para download", {
+            style: { background: "green", color: "white" },
+          });
+
           setFile(url);
         }
       } catch (error: any) {
