@@ -127,8 +127,7 @@ const Checkout = () => {
               })
                 .then(async (responseCheck) => {
                   if (responseCheck.status === 200) {
-                    const blob = await responseCheck.blob();
-                    const url = window.URL.createObjectURL(blob);
+                    const { url } = await responseCheck.json();
                     toast("Arquivo disponível para download", {
                       style: { background: "green", color: "white" },
                     });
@@ -146,8 +145,7 @@ const Checkout = () => {
             pixInterval.current = intervalId;
           }
         } else {
-          const blob = await response.blob();
-          const url = window.URL.createObjectURL(blob);
+          const { url } = await response.json();
           toast("Arquivo disponível para download", {
             style: { background: "green", color: "white" },
           });
@@ -217,7 +215,6 @@ const Checkout = () => {
               <a
                 className="flex justify-center items-center gap-3 border-2 p-2 max-w-[200px] mt-4"
                 href={file}
-                download={`${ebook.filename}`}
               >
                 <p>Baixar Arquivo</p>
                 <FaFileArchive size="30" />
@@ -263,7 +260,6 @@ const Checkout = () => {
               <a
                 className="flex justify-center items-center gap-3 border-2 p-2 max-w-[200px]"
                 href={file}
-                download={`${ebook.filename}`}
               >
                 <p>Baixar Arquivo</p>
                 <FaFileArchive size="30" />
