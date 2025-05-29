@@ -44,7 +44,9 @@ const Dashboard = () => {
       {connected === true && (
         <div className="flex flex-col bg-green-500 py-4 px-4 rounded-2xl">
           <p className="!my-2 text-white">
-            Parabéns! Você já está conectado com o Mercado Pago
+            Parabéns! Você já está conectado com o Mercado Pago. <br />
+            Para habilitar o PIX você precisa apenas cadastrar alguma chave na
+            sua conta.
           </p>
         </div>
       )}
