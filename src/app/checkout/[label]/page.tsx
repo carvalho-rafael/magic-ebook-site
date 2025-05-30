@@ -167,10 +167,14 @@ const Checkout = () => {
             amount: Number(ebook?.value),
           }}
           customization={{
-            paymentMethods: {
-              creditCard: "all",
-              bankTransfer: "all",
-            },
+            paymentMethods: ebook?.user?.has_pix
+              ? {
+                  creditCard: "all",
+                  bankTransfer: "all",
+                }
+              : {
+                  creditCard: "all",
+                },
             visual: {
               defaultPaymentOption: { bankTransferForm: true },
               hideFormTitle: true,

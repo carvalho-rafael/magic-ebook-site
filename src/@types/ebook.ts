@@ -20,5 +20,6 @@ export type Ebook = {
     id: number;
     name: string;
     mp_public_key?: string;
+    has_pix?: boolean;
   };
 };
