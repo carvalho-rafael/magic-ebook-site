@@ -6,7 +6,7 @@ export default function Navbar() {
 
   return (
     <div className="flex flex-col md:flex-row justify-between items-center w-full px-8 lg:py-4 bg-white shadow-md">
-      <div className="[&>img]:my-4" onClick={() => router.push(`/dashboard/`)}>
+      <div className="[&>img]:my-4" onClick={() => router.push(`/`)}>
         <Image
           alt="logo-magic-ebook"
           src="/assets/logo.png"
