@@ -139,15 +139,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const { name, email } = jwtDecode<JwtPayload>(accessToken);
             setUser({ name, email });
 
-            const callback = () => {
-              setIsAuthenticated(true);
-            };
-
             sendGTMEvent({
               event: "conversion_event_signup_2",
-              event_callback: callback,
-              event_timeout: 1000,
+              value: {
+                email,
+              },
             });
+            setIsAuthenticated(true);
           } catch {
             setIsAuthenticated(false);
           }
