@@ -3,6 +3,8 @@
 import { fetcher } from "@/utils/fetcher";
 import { jwtDecode } from "jwt-decode";
 
+import { sendGTMEvent } from "@next/third-parties/google";
+
 import React, {
   createContext,
   useCallback,
@@ -136,7 +138,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           try {
             const { name, email } = jwtDecode<JwtPayload>(accessToken);
             setUser({ name, email });
-            setIsAuthenticated(true);
+
+            const callback = () => {
+              setIsAuthenticated(true);
+            };
+
+            sendGTMEvent({
+              event: "conversion_event_signup_2",
+              event_callback: callback,
+              event_timeout: 1000,
+            });
           } catch {
             setIsAuthenticated(false);
           }

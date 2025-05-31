@@ -20,6 +20,7 @@ import { useContext, useEffect } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { LoadingContext } from "@/providers/LoadingProvider";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 const formSchema = z
   .object({
@@ -142,6 +143,11 @@ const Login = () => {
         <a
           href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google/login`}
           rel="noopener noreferrer"
+          onClick={() => {
+            sendGTMEvent({
+              event: "conversion_event_signup_2",
+            });
+          }}
         >
           <Button type="button" size="lg">
             <FcGoogle /> Entre com o Google
