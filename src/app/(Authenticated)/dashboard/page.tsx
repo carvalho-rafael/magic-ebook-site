@@ -57,6 +57,10 @@ const Dashboard = () => {
           <p className="!my-2 text-white">
             Você ainda não se conectou com o Mercado Pago
           </p>
+          <span className="text-sm">
+            * Para habilitar o PIX você precisa apenas cadastrar alguma chave na
+            sua conta.
+          </span>
           <Button className="self-start" onClick={authorizeMP}>
             Conectar agora
           </Button>
