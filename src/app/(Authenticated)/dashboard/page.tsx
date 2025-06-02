@@ -58,8 +58,8 @@ const Dashboard = () => {
             Você ainda não se conectou com o Mercado Pago
           </p>
           <span className="text-sm">
-            * Para habilitar o PIX você precisa apenas cadastrar alguma chave na
-            sua conta.
+            * Essa etapa é necessária para que você possa receber pelas vendas
+            dos seus ebooks.
           </span>
           <Button className="self-start" onClick={authorizeMP}>
             Conectar agora
