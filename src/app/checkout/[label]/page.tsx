@@ -15,6 +15,7 @@ import Navbar from "@/components/checkout/Navbar";
 import Footer from "@/components/checkout/Footer";
 import { FaFileArchive } from "react-icons/fa";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const Checkout = () => {
   const [ebook, setEbook] = useState<Ebook>();
@@ -199,6 +200,12 @@ const Checkout = () => {
 
   return (
     <div className="prose max-w-full">
+      {ebook && !ebook.user?.mp_public_key && (
+        <div className="w-full bg-red-700 text-white text-3xl p-4 text-center">
+          Página ainda indisponível para vendas. Para habilitar conecte-se com o
+          Mercado Pago.
+        </div>
+      )}
       <Navbar />
       <div className="p-4 bg-[url(/assets/bg-pattern.jpg)]">
         <div className="max-w-[600px] m-auto bg-white py-6 shadow">
@@ -226,7 +233,19 @@ const Checkout = () => {
             )}
           </div>
 
-          {ebook && paymentComponent}
+          {ebook.user?.mp_public_key ? (
+            paymentComponent
+          ) : (
+            <div className="w-full">
+              <Image
+                className="w-full"
+                alt="mock-payments"
+                src="/assets/mock-payments.png"
+                width={600}
+                height={120}
+              />
+            </div>
+          )}
 
           <div className="px-4">
             {qrCodePix && copyPastPix && (

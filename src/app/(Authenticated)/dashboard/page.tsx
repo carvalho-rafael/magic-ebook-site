@@ -6,7 +6,6 @@ import isAuth from "@/hoc/isAuth";
 import { AuthContext } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { toast } from "sonner";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -61,6 +60,9 @@ const Dashboard = () => {
             * Essa etapa é necessária para que você possa receber pelas vendas
             dos seus ebooks.
           </span>
+          <span className="text-sm">
+            * A página de vendas só funcionará completamente após esse passo.
+          </span>
           <Button className="self-start" onClick={authorizeMP}>
             Conectar agora
           </Button>
@@ -72,13 +74,7 @@ const Dashboard = () => {
           size="lg"
           className="bg-theme-1 text-[18px]"
           onClick={() => {
-            if (connected) {
-              router.push("dashboard/ebooks/create");
-            } else {
-              toast("Você precisa se conectar ao Mercado Pago antes.", {
-                style: { background: "red", color: "white" },
-              });
-            }
+            router.push("dashboard/ebooks/create");
           }}
         >
           <span className="font-extrabold text-[18px]">+</span> Adicionar E-book
