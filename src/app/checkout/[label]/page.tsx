@@ -214,7 +214,7 @@ const Checkout = () => {
   }
 
   return (
-    <div className="prose max-w-full">
+    <div className="prose max-w-full min-h-screen">
       {ebook && !ebook.user?.mp_public_key && (
         <div className="w-full bg-red-700 text-white text-3xl p-4 text-center">
           Página ainda indisponível para vendas. Para habilitar conecte-se com o
