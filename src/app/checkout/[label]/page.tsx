@@ -214,7 +214,7 @@ const Checkout = () => {
   }
 
   return (
-    <div className="prose max-w-full min-h-screen">
+    <div className="prose max-w-full">
       {ebook && !ebook.user?.mp_public_key && (
         <div className="w-full bg-red-700 text-white text-3xl p-4 text-center">
           Página ainda indisponível para vendas. Para habilitar conecte-se com o
@@ -222,7 +222,7 @@ const Checkout = () => {
         </div>
       )}
       <Navbar />
-      <div className="p-4 bg-[url(/assets/bg-pattern.jpg)]">
+      <div className="p-4 bg-[url(/assets/bg-pattern.jpg)] min-h-screen">
         <div className="max-w-[600px] m-auto bg-white py-6 shadow">
           <div className="px-4">
             <h2 className="font-normal mt-0">{ebook?.title}</h2>
