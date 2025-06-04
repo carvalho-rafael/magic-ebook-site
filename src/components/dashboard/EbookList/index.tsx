@@ -14,7 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { FaCopy, FaEdit } from "react-icons/fa";
+import {
+  FaArrowCircleUp,
+  FaCopy,
+  FaEdit,
+  FaExternalLinkAlt,
+  FaTrash,
+} from "react-icons/fa";
 
 const EbookList = () => {
   const router = useRouter();
@@ -88,22 +94,32 @@ const EbookList = () => {
                     });
                 }}
               >
-                <FaCopy />
-                Copiar link
+                <FaCopy /> <span className="hidden md:inline">Copiar</span>
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  router.push(
+                    `${process.env.NEXT_PUBLIC_WEB_URL}/checkout/${ebook.label}`
+                  )
+                }
+              >
+                <FaExternalLinkAlt />{" "}
+                <span className="hidden md:inline">Acessar</span>
               </Button>
               <Button
                 variant="secondary"
                 onClick={() => router.push(`/dashboard/ebooks/${ebook.id}`)}
               >
-                <FaEdit /> Editar
+                <FaEdit />
               </Button>
               <Button
-                variant="link"
+                variant="secondary"
                 onClick={() => {
                   deleteEbook(ebook.id);
                 }}
               >
-                Excluir
+                <FaTrash />
               </Button>
             </div>
           </CardFooter>
