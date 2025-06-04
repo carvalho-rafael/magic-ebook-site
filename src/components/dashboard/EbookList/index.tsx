@@ -14,13 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import {
-  FaArrowCircleUp,
-  FaCopy,
-  FaEdit,
-  FaExternalLinkAlt,
-  FaTrash,
-} from "react-icons/fa";
+import { FaCopy, FaEdit, FaExternalLinkAlt, FaTrash } from "react-icons/fa";
 
 const EbookList = () => {
   const router = useRouter();
