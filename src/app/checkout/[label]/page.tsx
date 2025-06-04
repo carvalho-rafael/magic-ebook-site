@@ -4,7 +4,14 @@
 
 import { useParams } from "next/navigation";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { Ebook } from "@/@types/ebook";
 import { fetcher } from "@/utils/fetcher";
@@ -16,6 +23,7 @@ import Footer from "@/components/checkout/Footer";
 import { FaFileArchive } from "react-icons/fa";
 import { toast } from "sonner";
 import Image from "next/image";
+import { LoadingContext } from "@/providers/LoadingProvider";
 
 const Checkout = () => {
   const [ebook, setEbook] = useState<Ebook>();
@@ -27,20 +35,27 @@ const Checkout = () => {
   const [file, setFile] = useState("");
   const pixInterval = useRef<NodeJS.Timeout>(undefined);
 
-  const fetchEbook = useCallback(async (label: string) => {
-    try {
-      const response = await fetcher(`ebooks/checkout/${label}`, {
-        method: "GET",
-      });
+  const { setIsLoading } = useContext(LoadingContext);
 
-      const ebookResponse: Ebook = await response.json();
-      if (ebookResponse) {
-        setEbook(ebookResponse);
+  const fetchEbook = useCallback(
+    async (label: string) => {
+      try {
+        setIsLoading(true);
+        const response = await fetcher(`ebooks/checkout/${label}`, {
+          method: "GET",
+        });
+
+        const ebookResponse: Ebook = await response.json();
+        if (ebookResponse) {
+          setEbook(ebookResponse);
+        }
+      } catch (error) {
+        console.log("erro ebook", error);
       }
-    } catch (error) {
-      console.log("erro ebook", error);
-    }
-  }, []);
+      setIsLoading(false);
+    },
+    [setIsLoading]
+  );
 
   useEffect(() => {
     const publicKey = ebook?.user?.mp_public_key;
@@ -195,7 +210,7 @@ const Checkout = () => {
   );
 
   if (!ebook) {
-    return <p>Loading...</p>;
+    return <p></p>;
   }
 
   return (
