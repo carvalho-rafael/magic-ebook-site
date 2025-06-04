@@ -4,6 +4,15 @@ import TextStyle from "@tiptap/extension-text-style";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import React, { useLayoutEffect } from "react";
+import {
+  FaItalic,
+  FaListOl,
+  FaListUl,
+  FaParagraph,
+  FaRedo,
+  FaStrikethrough,
+  FaUndo,
+} from "react-icons/fa";
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) {
@@ -19,7 +28,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           disabled={!editor.can().chain().focus().toggleBold().run()}
           className={editor.isActive("bold") ? "is-active" : ""}
         >
-          Bold
+          <b>B</b>
         </button>
         <button
           type="button"
@@ -27,7 +36,9 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           disabled={!editor.can().chain().focus().toggleItalic().run()}
           className={editor.isActive("italic") ? "is-active" : ""}
         >
-          <i>I</i>
+          <i>
+            <FaItalic />
+          </i>
         </button>
         <button
           type="button"
@@ -35,34 +46,14 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           disabled={!editor.can().chain().focus().toggleStrike().run()}
           className={editor.isActive("strike") ? "is-active stroke-1" : ""}
         >
-          Strike
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleCode().run()}
-          disabled={!editor.can().chain().focus().toggleCode().run()}
-          className={editor.isActive("code") ? "is-active" : ""}
-        >
-          Code
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().unsetAllMarks().run()}
-        >
-          Clear marks
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().clearNodes().run()}
-        >
-          Clear nodes
+          <FaStrikethrough />
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().setParagraph().run()}
           className={editor.isActive("paragraph") ? "is-active" : ""}
         >
-          Paragraph
+          <FaParagraph />
         </button>
         <button
           type="button"
@@ -73,7 +64,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             editor.isActive("heading", { level: 1 }) ? "is-active" : ""
           }
         >
-          H1
+          T1
         </button>
         <button
           type="button"
@@ -84,7 +75,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             editor.isActive("heading", { level: 2 }) ? "is-active" : ""
           }
         >
-          H2
+          T2
         </button>
         <button
           type="button"
@@ -95,7 +86,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             editor.isActive("heading", { level: 3 }) ? "is-active" : ""
           }
         >
-          H3
+          T3
         </button>
         <button
           type="button"
@@ -106,7 +97,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             editor.isActive("heading", { level: 4 }) ? "is-active" : ""
           }
         >
-          H4
+          T4
         </button>
         <button
           type="button"
@@ -117,7 +108,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             editor.isActive("heading", { level: 5 }) ? "is-active" : ""
           }
         >
-          H5
+          T5
         </button>
         <button
           type="button"
@@ -128,61 +119,127 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             editor.isActive("heading", { level: 6 }) ? "is-active" : ""
           }
         >
-          H6
+          T6
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={editor.isActive("bulletList") ? "is-active" : ""}
         >
-          Bullet list
+          <FaListUl />
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={editor.isActive("orderedList") ? "is-active" : ""}
         >
-          Ordered list
+          <FaListOl />
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           className={editor.isActive("codeBlock") ? "is-active" : ""}
         >
-          Code block
+          {"< />"}
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           className={editor.isActive("blockquote") ? "is-active" : ""}
         >
-          Blockquote
+          {'""'}
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().setHorizontalRule().run()}
         >
-          Horizontal rule
+          Linha
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().setHardBreak().run()}
         >
-          Hard break
+          Pular linha
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().chain().focus().undo().run()}
         >
-          Undo
+          <FaUndo />
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().chain().focus().redo().run()}
         >
-          Redo
+          <FaRedo />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setColor("#000000").run()}
+          className={
+            editor.isActive("textStyle", { color: "#000000" })
+              ? "is-active"
+              : ""
+          }
+        >
+          <div className="bg-[#000000] p-2"></div>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setColor("#ff0000").run()}
+          className={
+            editor.isActive("textStyle", { color: "#ff0000" })
+              ? "is-active"
+              : ""
+          }
+        >
+          <div className="bg-[#ff0000] p-2"></div>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setColor("#00ff00").run()}
+          className={
+            editor.isActive("textStyle", { color: "#00ff00" })
+              ? "is-active"
+              : ""
+          }
+        >
+          <div className="bg-[#00ff00] p-2"></div>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setColor("#0000ff").run()}
+          className={
+            editor.isActive("textStyle", { color: "#0000ff" })
+              ? "is-active"
+              : ""
+          }
+        >
+          <div className="bg-[#0000ff] p-2"></div>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setColor("#e1441e").run()}
+          className={
+            editor.isActive("textStyle", { color: "#e1441e" })
+              ? "is-active"
+              : ""
+          }
+        >
+          <div className="bg-[#e1441e] p-2"></div>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setColor("#f544ff").run()}
+          className={
+            editor.isActive("textStyle", { color: "#f544ff" })
+              ? "is-active"
+              : ""
+          }
+        >
+          <div className="bg-[#f544ff] p-2"></div>
         </button>
         <button
           type="button"
@@ -193,7 +250,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
               : ""
           }
         >
-          Purple
+          <div className="bg-[#958DF1] p-2"></div>
         </button>
       </div>
     </div>
