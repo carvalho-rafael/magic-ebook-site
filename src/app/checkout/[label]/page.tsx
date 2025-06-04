@@ -224,7 +224,7 @@ const Checkout = () => {
 
             {file && (
               <a
-                className="flex justify-center items-center gap-3 border-2 p-2 max-w-[200px] mt-4"
+                className="flex justify-center items-center gap-3 border-2 p-2 max-w-[400px] mt-4"
                 href={file}
               >
                 <p>Baixar Arquivo</p>
@@ -281,7 +281,7 @@ const Checkout = () => {
 
             {file && (
               <a
-                className="flex justify-center items-center gap-3 border-2 p-2 max-w-[200px]"
+                className="flex justify-center items-center gap-3 border-2 p-2 max-w-[400px]"
                 href={file}
               >
                 <p>Baixar Arquivo</p>
