@@ -16,6 +16,17 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FaCopy, FaEdit, FaExternalLinkAlt, FaTrash } from "react-icons/fa";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 const EbookList = () => {
   const router = useRouter();
 
@@ -39,6 +50,7 @@ const EbookList = () => {
         method: "DELETE",
       });
       if (response.success) {
+        console.log(response);
         alert("Ebook excluído com sucesso");
         fetchEbook();
       }
@@ -107,14 +119,26 @@ const EbookList = () => {
               >
                 <FaEdit />
               </Button>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  deleteEbook(ebook.id);
-                }}
-              >
-                <FaTrash />
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger>
+                  <FaTrash />
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Remover o ebook?</AlertDialogTitle>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        deleteEbook(ebook.id);
+                      }}
+                    >
+                      Sim{" "}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </CardFooter>
         </Card>

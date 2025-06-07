@@ -186,15 +186,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               const retryResponse = await fetcher(url, options, accessToken);
 
               if (!retryResponse.ok) {
+                const errorResponse = await retryResponse.json();
                 if (retryResponse.status === 400) {
-                  const errorResponse = await retryResponse.json();
-
                   return {
                     success: false,
                     status: retryResponse.status,
                     erro: errorResponse.message,
                   };
                 }
+                return {
+                  success: false,
+                  status: retryResponse.status,
+                  erro: errorResponse.message,
+                };
               }
 
               const retryResponseData = await retryResponse.json();
@@ -230,15 +234,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               const retryResponse = await fetcher(url, options, accessToken);
 
               if (!retryResponse.ok) {
+                const errorResponse = await retryResponse.json();
                 if (retryResponse.status === 400) {
-                  const errorResponse = await retryResponse.json();
-
                   return {
                     success: false,
                     status: retryResponse.status,
                     erro: errorResponse.message,
                   };
                 }
+                return {
+                  success: false,
+                  status: retryResponse.status,
+                  erro: errorResponse.message,
+                };
               }
 
               const retryResponseData = await retryResponse.json();
@@ -265,15 +273,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         if (!response.ok) {
+          const errorResponse = await response.json();
           if (response.status === 400) {
-            const errorResponse = await response.json();
-
             return {
               success: false,
               status: response.status,
               erro: errorResponse.message,
             };
           }
+          return {
+            success: false,
+            status: response.status,
+            erro: errorResponse.message,
+          };
         }
 
         const responseData = await response.json();
