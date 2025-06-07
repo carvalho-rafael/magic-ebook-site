@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Magic Ebook",
   description: "Magic Ebook - easy to sell easy to buy",
+  keywords: ["vender ebooks", "onde vender ebooks", "como vender ebooks"],
 };
 
 export default function RootLayout({
