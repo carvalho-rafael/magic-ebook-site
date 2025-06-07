@@ -44,10 +44,6 @@ const Dashboard = () => {
         <div className="flex flex-col bg-green-500 py-4 px-4 rounded-2xl">
           <p className="!my-2 text-white">
             Parabéns! Você já está conectado com o Mercado Pago. <br />
-            <span className="text-sm">
-              * Para habilitar o PIX você precisa apenas cadastrar alguma chave
-              na sua conta.
-            </span>
           </p>
         </div>
       )}
@@ -59,9 +55,6 @@ const Dashboard = () => {
           <span className="text-sm">
             * Essa etapa é necessária para que você possa receber pelas vendas
             dos seus ebooks.
-          </span>
-          <span className="text-sm">
-            * A página de vendas só funcionará completamente após esse passo.
           </span>
           <Button className="self-start" onClick={authorizeMP}>
             Conectar agora
