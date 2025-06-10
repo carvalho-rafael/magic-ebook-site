@@ -36,7 +36,7 @@ const Checkout = async ({ params }: { params: Promise<{ label: string }> }) => {
       <div className="p-4 bg-[url(/assets/bg-pattern.jpg)] min-h-screen">
         <div className="max-w-[600px] m-auto bg-white py-6 shadow">
           <div className="px-4">
-            <h2 className="font-normal mt-0">{ebook?.title}</h2>
+            <h1 className="font-normal mt-0">{ebook?.title}</h1>
             <p className="font-normal italic">{ebook?.description}</p>
             <div dangerouslySetInnerHTML={{ __html: ebook.body || "" }}></div>
             <hr />

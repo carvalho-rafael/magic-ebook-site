@@ -167,6 +167,10 @@ const CheckoutPaymentComponent = ({ ebook }: { ebook: Ebook }) => {
 
   return (
     <div>
+      <p className="text-sm text-gray-600">
+        Após a confirmação do pagamento o ebook será liberado para download.
+        Você também receberá um email com um link para download.
+      </p>
       {ebook.user?.mp_public_key ? (
         paymentComponent
       ) : (
