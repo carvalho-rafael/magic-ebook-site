@@ -72,6 +72,8 @@ export async function generateMetadata({
 
   return {
     title: ebook.title,
+    keywords: [ebook.title],
+    description: ebook.description,
   };
 }
 
