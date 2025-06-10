@@ -3,7 +3,7 @@
 import { fetcher } from "@/utils/fetcher";
 import { jwtDecode } from "jwt-decode";
 
-import { sendGTMEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@next/third-parties/google";
 
 import React, {
   createContext,
@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const { name, email } = jwtDecode<JwtPayload>(accessToken);
             setUser({ name, email });
 
-            sendGTMEvent({
+            sendGAEvent({
               event: "conversion_event_signup_2",
               value: {
                 email,

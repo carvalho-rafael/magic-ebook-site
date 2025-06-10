@@ -20,7 +20,7 @@ import { useContext, useEffect } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { LoadingContext } from "@/providers/LoadingProvider";
-import { sendGTMEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@next/third-parties/google";
 
 const formSchema = z
   .object({
@@ -144,8 +144,11 @@ const Login = () => {
           href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google/login`}
           rel="noopener noreferrer"
           onClick={() => {
-            sendGTMEvent({
+            sendGAEvent({
               event: "conversion_event_signup_2",
+              value: {
+                email: "from google login",
+              },
             });
           }}
         >
