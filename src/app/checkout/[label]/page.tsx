@@ -72,8 +72,8 @@ export async function generateMetadata({
 
   return {
     title: ebook.title,
-    keywords: [ebook.title],
-    description: ebook.description,
+    keywords: ebook.keywords || undefined,
+    description: ebook.description || undefined,
   };
 }
 

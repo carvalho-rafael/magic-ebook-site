@@ -3,6 +3,7 @@ export type Ebook = {
   user_id: number;
   title: string;
   description?: string;
+  keywords?: string;
   label: string;
   body: string;
   value: string;

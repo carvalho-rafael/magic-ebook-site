@@ -27,6 +27,7 @@ const formSchema = z.object({
   title: z.string().min(2),
   label: z.string().min(2),
   description: z.string(),
+  keywords: z.string(),
   body: z.string().min(2),
   value: z.number().min(5),
   file: z.any(),
@@ -38,6 +39,8 @@ type IRequest = {
     id: number;
     title: string;
     value: string;
+    keywords?: string;
+    description?: string;
     filename?: string;
   };
 };
@@ -55,6 +58,7 @@ const EbookForm = ({ isEdit, defaultValues }: IRequest) => {
       title: "",
       label: "",
       description: "",
+      keywords: "",
       body: "",
       value: 0,
     },
@@ -71,6 +75,7 @@ const EbookForm = ({ isEdit, defaultValues }: IRequest) => {
     formdata.append("title", values.title);
     formdata.append("label", label);
     formdata.append("description", values.description);
+    formdata.append("keywords", values.keywords);
     formdata.append("body", values.body);
     formdata.append("value", String(values.value));
 
@@ -102,6 +107,8 @@ const EbookForm = ({ isEdit, defaultValues }: IRequest) => {
       form.reset({
         ...defaultValues,
         value: Number(defaultValues.value),
+        keywords: defaultValues.keywords || "",
+        description: defaultValues.description || "",
       });
     }
   }, [isEdit, defaultValues, form]);
@@ -133,6 +140,22 @@ const EbookForm = ({ isEdit, defaultValues }: IRequest) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Descrição (opcional)</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="keywords"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Palavras-chave separadas por vírgula (opcional)
+                </FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
