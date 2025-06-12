@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Magic Ebook",
-  description: "Magic Ebook - easy to sell easy to buy",
+  description:
+    "Venda seus ebooks de forma simples e rápida. Receba pagamentos na hora da venda. Menor taxa do mercado.",
   keywords: ["vender ebooks", "onde vender ebooks", "como vender ebooks"],
 };
 
