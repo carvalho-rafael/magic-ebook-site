@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-import { GoogleTagManager } from "@next/third-parties/google";
+import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 
 import "./globals.css";
 
@@ -35,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <GoogleTagManager gtmId="GTM-5B49WN8S" />
+      <GoogleAnalytics gaId="AW-17110194873" />
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
         <Toaster />

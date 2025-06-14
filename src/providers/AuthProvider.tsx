@@ -139,11 +139,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const { name, email } = jwtDecode<JwtPayload>(accessToken);
             setUser({ name, email });
 
-            sendGAEvent({
-              event: "conversion_event_signup_2",
-              value: {
-                email,
-              },
+            sendGAEvent("event", "conversion", {
+              send_to: "AW-17110194873/q_SvCNmz4NoaELm1494_",
             });
             setIsAuthenticated(true);
           } catch {

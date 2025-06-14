@@ -141,14 +141,14 @@ const Login = () => {
         </Form>
         <div className="h-2 w-2 rounded-[20px] bg-gray-300 my-4"></div>
         <a
-          href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google/login`}
           rel="noopener noreferrer"
           onClick={() => {
-            sendGAEvent({
-              event: "conversion_event_signup_2",
-              value: {
-                email: "from google login",
-              },
+            const callback = () => {
+              window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google/login`;
+            };
+            sendGAEvent("event", "conversion", {
+              send_to: "AW-17110194873/q_SvCNmz4NoaELm1494_",
+              event_callback: callback,
             });
           }}
         >

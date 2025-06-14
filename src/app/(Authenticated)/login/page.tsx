@@ -21,6 +21,7 @@ import { AuthContext } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { LoadingContext } from "@/providers/LoadingProvider";
 import Loading from "@/components/Loading";
+import { sendGAEvent } from "@next/third-parties/google";
 
 const formSchema = z.object({
   email: z.string().min(2).max(50),
@@ -109,8 +110,16 @@ const Login = () => {
         </Form>
         <div className="h-2 w-2 rounded-[20px] bg-gray-300 my-4"></div>
         <a
-          href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google/login`}
           rel="noopener noreferrer"
+          onClick={() => {
+            const callback = () => {
+              window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google/login`;
+            };
+            sendGAEvent("event", "conversion", {
+              send_to: "AW-17110194873/q_SvCNmz4NoaELm1494_",
+              event_callback: callback,
+            });
+          }}
         >
           <Button type="button" size="lg">
             <FcGoogle /> Entre com o Google
