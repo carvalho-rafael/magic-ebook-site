@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -48,6 +49,13 @@ export default function SectionFees() {
               </TableBody>
             </Table>
           </div>
+        </div>
+        <div className="flex justify-end my-4">
+          <a href="/login">
+            <Button size={"lg"} className="bg-theme-2 ml-auto">
+              Quero aproveitar!
+            </Button>
+          </a>
         </div>
       </div>
     </div>
