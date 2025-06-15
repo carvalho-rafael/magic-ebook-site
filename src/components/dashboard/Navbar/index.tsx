@@ -1,6 +1,13 @@
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { FaBars, FaChartLine, FaUser } from "react-icons/fa";
 
 type NavbarProps = {
   user?: {
@@ -23,11 +30,35 @@ export default function Navbar({ user, logout }: NavbarProps) {
       </div>
       <div className="flex justify-between items-center">
         <p>Bem vindo, {user?.name.split(" ")?.[0]}! </p>
-        <a onClick={() => logout()}>
-          <Button className="text-white" variant="link" size="lg">
-            Sair
-          </Button>
-        </a>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger className="ml-2 curson-pointer p-4">
+            <FaBars size={20} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>
+              <span
+                className="flex gap-2 w-full"
+                onClick={() => redirect(`/dashboard/profile`)}
+              >
+                <FaUser /> Minha conta
+              </span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <span
+                className="flex gap-2 w-full"
+                onClick={() => redirect(`/dashboard/purchases`)}
+              >
+                <FaChartLine /> Vendas
+              </span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <span className="flex gap-2 w-full" onClick={() => logout()}>
+                Sair
+              </span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
