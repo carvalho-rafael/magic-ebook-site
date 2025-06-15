@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_WEB_URL || "https://www.magicebook.com.br"
   ),
   alternates: {
-    canonical: "/",
+    canonical: "./",
   },
 };
 
