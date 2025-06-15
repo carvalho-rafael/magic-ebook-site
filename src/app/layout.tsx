@@ -25,6 +25,12 @@ export const metadata: Metadata = {
     "onde vender ebooks",
     "como vender ebooks",
   ],
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_WEB_URL || "https://www.magicebook.com.br"
+  ),
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({
