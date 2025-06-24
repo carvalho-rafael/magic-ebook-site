@@ -12,12 +12,14 @@ import { IPaymentFormData } from "@mercadopago/sdk-react/esm/bricks/payment/type
 import { FaFileArchive } from "react-icons/fa";
 import { toast } from "sonner";
 import Image from "next/image";
+import Link from "next/link";
 
 const CheckoutPaymentComponent = ({ ebook }: { ebook: Ebook }) => {
   const [qrCodePix, setQrCodePix] = useState<string>();
   const [copyPastPix, setCopyPastPix] = useState<string>();
   const [file, setFile] = useState("");
   const pixInterval = useRef<NodeJS.Timeout>(undefined);
+  const [termsOfUse, setTermsOfUse] = useState(false);
 
   useEffect(() => {
     const publicKey = ebook?.user?.mp_public_key;
@@ -171,8 +173,25 @@ const CheckoutPaymentComponent = ({ ebook }: { ebook: Ebook }) => {
         Após a confirmação do pagamento o ebook será liberado para download.
         Você também receberá um email com um link para download.
       </p>
+      <input
+        id="terms-of-use"
+        type="checkbox"
+        checked={termsOfUse}
+        onChange={() => setTermsOfUse((prev) => !prev)}
+      />
+      <label htmlFor="terms-of-use" className="ml-2">
+        Aceitar{" "}
+        <Link href={"/doc/terms-of-use"} target="_blank" className="!underline">
+          termos de uso.
+        </Link>
+      </label>
+
       {ebook.user?.mp_public_key ? (
-        paymentComponent
+        <div
+          className={`${!termsOfUse ? "opacity-50 pointer-events-none" : ""}`}
+        >
+          {paymentComponent}
+        </div>
       ) : (
         <div className="w-full">
           <Image

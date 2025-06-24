@@ -22,6 +22,7 @@ import Image from "next/image";
 import { LoadingContext } from "@/providers/LoadingProvider";
 import Loading from "@/components/Loading";
 import { sendGAEvent } from "@next/third-parties/google";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().min(2).max(50),
@@ -109,6 +110,17 @@ const Login = () => {
           </form>
         </Form>
         <div className="h-2 w-2 rounded-[20px] bg-gray-300 my-4"></div>
+        <p className="text-sm mb-4">
+          Ao se cadastrar você concorda com os{" "}
+          <Link
+            href={"/doc/terms-of-use"}
+            target="_blank"
+            className="!underline"
+          >
+            termos de uso.
+          </Link>
+        </p>
+
         <a
           rel="noopener noreferrer"
           onClick={() => {

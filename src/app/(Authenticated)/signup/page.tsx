@@ -21,6 +21,7 @@ import { AuthContext } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { LoadingContext } from "@/providers/LoadingProvider";
 import { sendGAEvent } from "@next/third-parties/google";
+import Link from "next/link";
 
 const formSchema = z
   .object({
@@ -134,6 +135,18 @@ const Login = () => {
                 </FormItem>
               )}
             />
+
+            <p className="text-sm">
+              Ao se cadastrar você concorda com os{" "}
+              <Link
+                href={"/doc/terms-of-use"}
+                target="_blank"
+                className="!underline"
+              >
+                termos de uso.
+              </Link>
+            </p>
+
             <Button type="submit" size="lg">
               Cadastrar
             </Button>
