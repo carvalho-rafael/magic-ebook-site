@@ -28,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  let labels: string[] = []
+  let labels: string[] = [];
 
   try {
     const ebooksLabels = await fetch(
