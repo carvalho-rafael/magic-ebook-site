@@ -28,16 +28,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const ebooksLabels = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/ebooks/list-labels`
-  );
+  let labels: string[] = []
 
-  if (!ebooksLabels.ok) {
-    console.error("Failed to fetch ebook labels:", ebooksLabels.statusText);
+  try {
+    const ebooksLabels = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/ebooks/list-labels`
+    );
+    
+    if (!ebooksLabels.ok) {
+      console.error("Failed to fetch ebook labels:", ebooksLabels.statusText);
+      return defaultUrls;
+    }
+
+    labels = await ebooksLabels.json();
+  catch {
     return defaultUrls;
   }
-
-  const labels: string[] = await ebooksLabels.json();
 
   const ebookUrls: MetadataRoute.Sitemap = labels.map((label) => ({
     url: `${baseUrl}/checkout/${label}`,
