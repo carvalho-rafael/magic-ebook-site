@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     labels = await ebooksLabels.json();
-  catch {
+  } catch {
     return defaultUrls;
   }
 
